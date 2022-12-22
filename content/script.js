@@ -6,17 +6,17 @@ Config.getAll().then(function (config) {
     let scripts = [
         ["content/core_helpers.js"],
         ["content/communication_helpers.js"],
-        ["content/captcha/geetest/interceptor.js", config.enabledForGeetest && !isBlocked],
-        ["content/captcha/geetest_v4/interceptor.js", config.enabledForGeetest_v4 && !isBlocked],
-        ["content/captcha/hcaptcha/interceptor.js", config.enabledForHCaptcha && !isBlocked],
+        ["content/captcha/geetest/interceptor.js", config.isPluginEnabled && config.enabledForGeetest && !isBlocked],
+        ["content/captcha/geetest_v4/interceptor.js", config.isPluginEnabled && config.enabledForGeetest_v4 && !isBlocked],
+        ["content/captcha/hcaptcha/interceptor.js", config.isPluginEnabled && config.enabledForHCaptcha && !isBlocked],
         ["content/captcha/hcaptcha/hunter.js"],
         ["content/captcha/keycaptcha/hunter.js"],
-        ["content/captcha/recaptcha/interceptor.js", !isBlocked],
+        ["content/captcha/recaptcha/interceptor.js", config.isPluginEnabled && (config.enabledForRecaptchaV2 || config.enabledForInvisibleRecaptchaV2 || config.enabledForRecaptchaV3) && !isBlocked],
         ["content/captcha/recaptcha/hunter.js"],
-        ["content/captcha/arkoselabs/interceptor.js", !isBlocked],
+        ["content/captcha/arkoselabs/interceptor.js", config.isPluginEnabled && config.enabledForArkoselabs && !isBlocked],
         ["content/captcha/arkoselabs/hunter.js"],
-        ["content/captcha/lemin/interceptor.js", config.enabledForLemin && !isBlocked],
-        ["content/captcha/yandex/interceptor.js", config.enabledForYandex && !isBlocked]
+        ["content/captcha/lemin/interceptor.js", config.isPluginEnabled && config.enabledForLemin && !isBlocked],
+        ["content/captcha/yandex/interceptor.js", config.isPluginEnabled && config.enabledForYandex && !isBlocked]
     ];
 
     scripts.forEach(s => {
@@ -85,7 +85,7 @@ let CAPTCHA_WIDGETS_LOOP = setInterval(function () {
 /*
  * Background communication
  */
-var background = chrome.runtime.connect({name: "content"});
+var background = chrome.runtime.connect({ name: "content" });
 
 background.onMessage.addListener(function (msg) {
 
@@ -290,7 +290,7 @@ let webPageMsgInterval = setInterval(function () {
                 Config.getAll().then(config => {
                     setWebPageMessageResponse(msg, config);
                 }).catch(e => {
-                    setWebPageMessageResponse(msg, {error: e.message});
+                    setWebPageMessageResponse(msg, { error: e.message });
                 });
             } else if (msg.dataset.action === "solve") {
                 let data = JSON.parse(decodeURIComponent(msg.dataset.data));
@@ -311,7 +311,7 @@ let webPageMsgInterval = setInterval(function () {
                     }
                 });
             } else {
-                setWebPageMessageResponse(msg, {error: "unknown_action"});
+                setWebPageMessageResponse(msg, { error: "unknown_action" });
             }
         }
     });
@@ -323,9 +323,9 @@ function respondToWebPageMessage(msg) {
     if (!message.length) return;
 
     if (msg.error) {
-        setWebPageMessageResponse(message[0], {error: msg.error});
+        setWebPageMessageResponse(message[0], { error: msg.error });
     } else {
-        setWebPageMessageResponse(message[0], {response: msg.response.code});
+        setWebPageMessageResponse(message[0], { response: msg.response.code });
     }
 }
 
@@ -345,7 +345,7 @@ document.addEventListener("contextmenu", function (event) {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.command == "getContextMenuEl") {
-        sendResponse({xpath: getXPath(contextMenuEl)});
+        sendResponse({ xpath: getXPath(contextMenuEl) });
         if (request.element == 'input') {
             $('.twocaptcha-toast .close').click();
         } else if (request.showManual) {
