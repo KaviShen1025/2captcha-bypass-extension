@@ -2,21 +2,21 @@
  * Load necessary actions in main scope
  */
 Config.getAll().then(function (config) {
-
+    const isBlocked = isBlockDomain(config.blackListDomain);
     let scripts = [
         ["content/core_helpers.js"],
         ["content/communication_helpers.js"],
-        ["content/captcha/geetest/interceptor.js", config.enabledForGeetest],
-        ["content/captcha/geetest_v4/interceptor.js", config.enabledForGeetest_v4],
-        ["content/captcha/hcaptcha/interceptor.js", config.enabledForHCaptcha],
+        ["content/captcha/geetest/interceptor.js", config.enabledForGeetest && !isBlocked],
+        ["content/captcha/geetest_v4/interceptor.js", config.enabledForGeetest_v4 && !isBlocked],
+        ["content/captcha/hcaptcha/interceptor.js", config.enabledForHCaptcha && !isBlocked],
         ["content/captcha/hcaptcha/hunter.js"],
         ["content/captcha/keycaptcha/hunter.js"],
-        ["content/captcha/recaptcha/interceptor.js"],
+        ["content/captcha/recaptcha/interceptor.js", !isBlocked],
         ["content/captcha/recaptcha/hunter.js"],
-        ["content/captcha/arkoselabs/interceptor.js"],
+        ["content/captcha/arkoselabs/interceptor.js", !isBlocked],
         ["content/captcha/arkoselabs/hunter.js"],
-        ["content/captcha/lemin/interceptor.js", config.enabledForLemin],
-        ["content/captcha/yandex/interceptor.js", config.enabledForYandex]
+        ["content/captcha/lemin/interceptor.js", config.enabledForLemin && !isBlocked],
+        ["content/captcha/yandex/interceptor.js", config.enabledForYandex && !isBlocked]
     ];
 
     scripts.forEach(s => {
@@ -147,7 +147,7 @@ function isBlockDomain(blackListDomain) {
         if (domains[i]) {
             const regExp = new RegExp(domains[i]);
             if (regExp.test(location.href)) {
-                console.log('Domain is block bu rule', domains[i]);
+                console.log('Domain is block by rule', domains[i]);
                 return true;
             }
         }
