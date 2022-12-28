@@ -34,6 +34,7 @@ var Config = {
         autoSolveCapyPuzzle: false,
         repeatOnErrorTimes: 0,
         repeatOnErrorDelay: 0,
+        buttonPosition: 'fixed',
         useProxy: false,
         proxytype: "HTTP",
         proxy: "",

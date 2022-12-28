@@ -14,6 +14,14 @@
     margin-bottom: 5px;
     color: #00bcbd;
 }
+
+.captcha-solver_fixed {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    z-index: 1000000;
+}
+
 .captcha-solver:hover {
     background: linear-gradient(0deg, #4b4b4b 0%, #232323 100%);
     cursor: pointer;
